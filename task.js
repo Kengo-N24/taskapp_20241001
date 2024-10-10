@@ -1,40 +1,38 @@
-// Function to allow the task to be moved
+// Firebaseの初期化（重複を削除）
+const firebaseConfig = {
+    apiKey: "AIzaSyBWwkFbV-D97_TgdXVW4eRITcdWf_8f2dY",
+    authDomain: "tasker-2f1b5.firebaseapp.com",
+    projectId: "tasker-2f1b5",
+    storageBucket: "tasker-2f1b5.appspot.com",
+    messagingSenderId: "131467156866",
+    appId: "1:131467156866:web:6e15d9718a08f5148ac39b"
+};
+
+// Firebaseの初期化
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// ドラッグ＆ドロップの関数
 function allowDrop(ev) {
     ev.preventDefault();
 }
 
-// Function to be called when the drag starts
 function drag(ev) {
     ev.dataTransfer.setData("text", ev.target.id);
 }
 
-// Handle dragover event to detect the target position
-function dragOver(ev) {
-    ev.preventDefault();
-    var target = ev.target;
-    
-    while (target && !target.classList.contains('task-item') && !target.classList.contains('task-list')) {
-        target = target.parentNode;
-    }
-
-    var bounding = target.getBoundingClientRect();
-    var offsetY = ev.clientY - bounding.top;
-    
-    if (target.classList.contains('task-item')) {
-        target.style.borderTop = offsetY < target.offsetHeight / 2 ? '2px solid #000' : '';
-        target.style.borderBottom = offsetY >= target.offsetHeight / 2 ? '2px solid #000' : '';
-    }
-}
-
-// Handle drop event to insert the task in the correct position
 function drop(ev) {
     ev.preventDefault();
     var data = ev.dataTransfer.getData("text");
     var droppedElement = document.getElementById(data);
     var target = ev.target;
 
-    while (target && !target.classList.contains('task-item') && !target.classList.contains('task-list')) {
-        target = target.parentNode;
+    // タスクのステータスを更新
+    let newListElement = target;
+
+    // targetがtask-listクラスを持っている要素を見つけるまで、親を遡る
+    while (newListElement && !newListElement.classList.contains('task-list')) {
+    newListElement = newListElement.parentNode;
     }
 
     if (target && target !== droppedElement) {
@@ -51,66 +49,95 @@ function drop(ev) {
             target.appendChild(droppedElement);
         }
         
-        saveTasks();
+        // タスクのステータスを更新
+       if (newListElement) {
+           const newListId = newListElement.id; // task-listクラスを持つdivのidを取得
+           const taskId = droppedElement.id;
+           db.collection('tasks').doc(taskId).update({ listId: newListId });
+       }
     }
-    
-    // Clean up borders
-    var allItems = document.querySelectorAll('.task-item');
-    allItems.forEach(function(item) {
-        item.style.borderTop = '';
-        item.style.borderBottom = '';
-    });
 }
 
-// Function to create a delete button for each task
-function createDeleteButton(taskElement) {
+// 削除ボタンの作成
+function createDeleteButton(taskElement, taskId) {
     var deleteButton = document.createElement("button");
     deleteButton.className = 'delete-button';
     deleteButton.innerText = "Delete";
-    deleteButton.onclick = function() {
-        taskElement.remove();
-        saveTasks(); // Save the changes after deleting the task
+    deleteButton.onclick = async function() {
+        try {
+            await deleteTask(taskId);
+            taskElement.remove();
+        } catch (error) {
+            console.error("Error deleting task:", error);
+            alert("タスクの削除中にエラーが発生しました。");
+        }
     };
     return deleteButton;
 }
 
-// Generate a unique ID
-function generateUniqueId() {
-    return 'task' + Date.now() + Math.random().toString(36).substr(2, 9);
+// タスクの作成（新規追加用）
+async function createNewTask(text, listId) {
+    try {
+        // Firestoreに新しいタスクを追加
+        const newTaskRef = await db.collection('tasks').add({
+            description: text,
+            status: "in-progress",
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            listId: listId
+        });
+
+        var newTask = document.createElement("div");
+        newTask.className = 'task-item';
+        newTask.id = newTaskRef.id;
+        newTask.draggable = true;
+        newTask.ondragstart = drag;
+
+        var taskText = document.createElement("span");
+        taskText.innerText = text;
+        taskText.onclick = function() {
+            enterEditMode(taskText, newTaskRef.id);
+        };
+        newTask.appendChild(taskText);
+
+        var deleteButton = createDeleteButton(newTask, newTaskRef.id);
+        newTask.appendChild(deleteButton);
+
+        var listElement = document.getElementById(listId);
+        listElement.appendChild(newTask);
+    } catch (error) {
+        console.error("Error creating task:", error);
+        alert("タスクの作成中にエラーが発生しました。");
+    }
 }
 
-// Function to add tasks to a specific list
-function createNewTask(text, listId) {
+// タスクの表示（ロード時用）
+function displayTask(doc) {
+    const task = doc.data();
+    const taskId = doc.id;
+
     var newTask = document.createElement("div");
     newTask.className = 'task-item';
-    var newTaskId = generateUniqueId();
-    newTask.id = newTaskId;
-    newTask.setAttribute('data-id', newTaskId);
+    newTask.id = taskId;
     newTask.draggable = true;
     newTask.ondragstart = drag;
 
     var taskText = document.createElement("span");
-    taskText.innerText = text;
+    taskText.innerText = task.description;
     taskText.onclick = function() {
-        enterEditMode(taskText);
+        enterEditMode(taskText, taskId);
     };
     newTask.appendChild(taskText);
 
-    var deleteButton = createDeleteButton(newTask);
+    var deleteButton = createDeleteButton(newTask, taskId);
     newTask.appendChild(deleteButton);
 
-    var listElement = document.getElementById(listId);
+    var listElement = document.getElementById(task.listId);
     listElement.appendChild(newTask);
-
-    return newTask;
 }
 
-
-// Function to enter edit mode for a task's text
-function enterEditMode(taskTextElement) {
-    // Check if textarea field already exists
+// 編集モードに入る関数
+function enterEditMode(taskTextElement, taskId) {
     if (taskTextElement.querySelector('textarea')) {
-        // If textarea field already exists, focus on it
         return;
     }
 
@@ -118,16 +145,14 @@ function enterEditMode(taskTextElement) {
     textarea.value = taskTextElement.innerText;
     textarea.className = 'edit-textarea';
 
-    // Handle textarea field's blur event (when it loses focus)
     textarea.onblur = function() {
-        exitEditMode(textarea, taskTextElement);
+        exitEditMode(textarea, taskTextElement, taskId);
     };
 
-    // Handle Enter key press
     textarea.onkeypress = function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            exitEditMode(textarea, taskTextElement);
+            exitEditMode(textarea, taskTextElement, taskId);
         }
     };
 
@@ -136,123 +161,67 @@ function enterEditMode(taskTextElement) {
     textarea.focus();
 }
 
-// Function to exit edit mode and save changes
-function exitEditMode(textareaElement, taskTextElement) {
+// 編集モードを終了し、変更を保存する関数
+async function exitEditMode(textareaElement, taskTextElement, taskId) {
     var newText = textareaElement.value.trim();
     if (newText) {
-        taskTextElement.innerText = newText;
-        saveTasks();  // Save changes to localStorage
+        try {
+            taskTextElement.innerText = newText;
+            await db.collection('tasks').doc(taskId).update({ description: newText });
+        } catch (error) {
+            console.error("Error updating task:", error);
+            alert("タスクの更新中にエラーが発生しました。");
+            taskTextElement.innerText = textareaElement.defaultValue;
+        }
     } else {
         alert("Task description cannot be empty.");
-        taskTextElement.innerText = textareaElement.defaultValue; // Revert to previous text
+        taskTextElement.innerText = textareaElement.defaultValue;
     }
 }
 
-// Function to save tasks into local storage
-function saveTasks() {
-    var taskLists = document.getElementsByClassName("task-list");
-    var tasksObj = {};
-
-    for (var i = 0; i < taskLists.length; i++) {
-        var listId = taskLists[i].id;
-        var taskElements = taskLists[i].getElementsByClassName("task-item");
-
-        tasksObj[listId] = [];
-        for (var j = 0; j < taskElements.length; j++) {
-            var taskText = taskElements[j].getElementsByTagName("span")[0].innerText;
-            tasksObj[listId].push(taskText);
-        }
+// タスクをロードする関数
+async function loadTasks() {
+    try {
+        const snapshot = await db.collection('tasks').get();
+        snapshot.forEach(doc => {
+            displayTask(doc);
+        });
+    } catch (error) {
+        console.error("Error loading tasks:", error);
+        alert("タスクのロード中にエラーが発生しました。");
     }
-
-    localStorage.setItem('tasks', JSON.stringify(tasksObj));
 }
 
-// Function to load tasks from local storage
-function loadTasks() {
-    var tasksObj = JSON.parse(localStorage.getItem('tasks'));
-
-    if (tasksObj) {
-        for (var listId in tasksObj) {
-            if (tasksObj.hasOwnProperty(listId)) {
-                var taskTexts = tasksObj[listId];
-                for (var i = 0; i < taskTexts.length; i++) {
-                    var newTask = createNewTask(taskTexts[i], listId);
-                    newTask.id = generateUniqueId(); // Ensure each loaded task has a unique ID
-                    newTask.setAttribute('data-id', newTask.id);
-                }
-            }
-        }
-    }
-    downloadTasksAsFile();
-}
-
-// Function to handle the Add Task button click event
-function handleAddTask() {
+// タスクの追加ボタンのハンドラー
+async function handleAddTask() {
     var taskInput = document.getElementById('new-task-input');
     var taskText = taskInput.value.trim();
 
     if (taskText) {
-        createNewTask(taskText, 'in-progress');
-        taskInput.value = ''; // Clear the input after adding the task
-        saveTasks(); // Save the new state of the tasks after adding a new one
+        await createNewTask(taskText, 'in-progress');
+        taskInput.value = '';
     } else {
         alert("Please enter a task description.");
     }
 }
 
-// Attach the event handler to the Add Task button
+// タスクの削除関数
+async function deleteTask(taskId) {
+    try {
+        await db.collection('tasks').doc(taskId).delete();
+    } catch (error) {
+        console.error("Error deleting task:", error);
+        alert("タスクの削除中にエラーが発生しました。");
+    }
+}
+
+// ダウンロードボタンのハンドラー（未使用の機能を無効化）
+document.getElementById('download-tasks-button').addEventListener('click', function() {
+    alert("This feature is no longer available since tasks are now stored in Firestore.");
+});
+
+// イベントリスナーの設定
 document.getElementById('add-task-button').addEventListener('click', handleAddTask);
 
-// Load tasks when the page is loaded
+// ページロード時にタスクをロード
 window.onload = loadTasks;
-
-function convertTasksToText() {
-    var taskLists = document.getElementsByClassName("task-list");
-    var tasksText = '';
-
-    for (var i = 0; i < taskLists.length; i++) {
-        var listElement = taskLists[i];
-        var listTitleElement = listElement.firstElementChild;
-        var listTitle = listTitleElement ? listTitleElement.innerText : "Task List";
-
-        tasksText += `${listTitle}\n`;
-        var taskElements = listElement.getElementsByClassName("task-item");
-        for (var j = 0; j < taskElements.length; j++) {
-            var taskText = taskElements[j].getElementsByTagName("span")[0].innerText;
-            tasksText += ` ${taskText}\n\n`;
-        }
-        tasksText += '\n';
-    }
-
-    return tasksText;
-}
-
-function createTextFile(tasksText) {
-    var blob = new Blob([tasksText], { type: "text/plain" });
-    var url = URL.createObjectURL(blob);
-    return url;
-}
-
-function getFormattedDate() {
-    var today = new Date();
-    var year = today.getFullYear();
-    var month = String(today.getMonth() + 1).padStart(2, '0'); // 月は0始まりなので+1する
-    var day = String(today.getDate()).padStart(2, '0');
-    return `${year}${month}${day}`;
-}
-
-function downloadTasksAsFile() {
-    var tasksText = convertTasksToText();
-    var fileUrl = createTextFile(tasksText);
-    var fileName = `${getFormattedDate()}.txt`;
-
-    var downloadLink = document.createElement("a");
-    downloadLink.href = fileUrl;
-    downloadLink.download = fileName;
-    downloadLink.click();
-    
-    // Revoke the object URL after download
-    URL.revokeObjectURL(fileUrl);
-}
-
-document.getElementById('download-tasks-button').addEventListener('click', downloadTasksAsFile);
