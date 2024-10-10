@@ -8,45 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <style>
-        /* テキストエリアのスタイル */
-        textarea {
-            width: 100%; /* 親要素の幅に合わせる */
-            max-width: 100%; /* 最大幅を100%に設定 */
-            height: auto; /* 自動で高さを調整 */
-            font-size: 16px; /* フォントサイズを大きくしてタッチしやすくする */
-            box-sizing: border-box; /* パディングを含めて幅を計算する */
-        }
-        /* タッチ操作時のズームを防ぐ */
-        input, textarea {
-            touch-action: manipulation; /* タッチ操作の挙動を制御 */
-            font-size: 16px; /* iOSデバイスでの自動ズームを防ぐためにフォントサイズを設定 */
-        }
-        .task-list {
-            width: 80%;
-            min-height: 200px;
-            margin: 10px;
-            padding: 10px;
-            border: 1px solid black;
-        }
-        .task-item {
-            position: relative;
-            padding-right: 60px;
-            margin-bottom: 10px;
-        }
-        .delete-button {
-            position: absolute;
-            right: 0;
-            top: 0;
-            border: none;
-            background: red;
-            color: white;
-            cursor: pointer;
-        }
-        .edit-textarea {
-            width: 100%;
-            height: 50px;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
     <div id="completed" class="task-list" ondrop="drop(event)" ondragover="allowDrop(event)">
