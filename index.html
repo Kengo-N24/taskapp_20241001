@@ -1,10 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Task Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <!-- Firebase v8 スクリプトに変更 -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <style>
+        /* テキストエリアのスタイル */
+        textarea {
+            width: 100%; /* 親要素の幅に合わせる */
+            max-width: 100%; /* 最大幅を100%に設定 */
+            height: auto; /* 自動で高さを調整 */
+            font-size: 16px; /* フォントサイズを大きくしてタッチしやすくする */
+            box-sizing: border-box; /* パディングを含めて幅を計算する */
+        }
+        /* タッチ操作時のズームを防ぐ */
+        input, textarea {
+            touch-action: manipulation; /* タッチ操作の挙動を制御 */
+            font-size: 16px; /* iOSデバイスでの自動ズームを防ぐためにフォントサイズを設定 */
+        }
         .task-list {
             width: 80%;
             min-height: 200px;
@@ -14,8 +30,8 @@
         }
         .task-item {
             position: relative;
-            padding-right: 60px; /* Padding to make room for the delete button */
-            margin-bottom: 10px; /* Margin for space between tasks */
+            padding-right: 60px;
+            margin-bottom: 10px;
         }
         .delete-button {
             position: absolute;
@@ -27,8 +43,8 @@
             cursor: pointer;
         }
         .edit-textarea {
-            width: 100%;  /* 親要素の幅に合わせる */
-            height: 200px; /* 高さを50pxに設定 */
+            width: 100%;
+            height: 50px;
         }
     </style>
 </head>
@@ -53,6 +69,7 @@
     <textarea id="new-task-input" rows="4" cols="50" placeholder="Write your new task here."></textarea>
     <button id="add-task-button">Add Task</button>
     <button id="download-tasks-button">Download Tasks</button>
+    
     <script src="task.js"></script>
 </body>
 </html>
