@@ -182,12 +182,36 @@ async function exitEditMode(textareaElement, taskTextElement, taskId) {
 // タスクをロードする関数
 async function loadTasks() {
     try {
-        const snapshot = await db.collection('tasks').get();
+        const snapshot = await db.collection('tasks').orderBy('listId').get();
+        let tasksByList = {
+            'completed': [],
+            'in-progress': [],
+            'tomorrow': [],
+            'other': []
+        };
+
         snapshot.forEach(doc => {
-            displayTask(doc);
+            const task = doc.data();
+            const taskId = doc.id;
+
+            if (!task.position) {
+                // positionがない場合は一時的に割り当て
+                const listArray = tasksByList[task.listId] || [];
+                task.position = listArray.length + 1;
+                tasksByList[task.listId].push({ id: taskId, ...task });
+
+                // Firestoreに新しいpositionを保存
+                db.collection('tasks').doc(taskId).update({ position: task.position });
+            } else {
+                tasksByList[task.listId].push({ id: taskId, ...task });
+            }
+
+            displayTask(doc); // ページにタスクを表示
         });
+
+        console.log("すべてのタスクがロードされ、ポジションが更新されました。");
     } catch (error) {
-        console.error("Error loading tasks:", error);
+        console.error("タスクのロード中にエラーが発生しました。", error);
         alert("タスクのロード中にエラーが発生しました。");
     }
 }
