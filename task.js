@@ -78,12 +78,17 @@ function createDeleteButton(taskElement, taskId) {
 // タスクの作成（新規追加用）
 async function createNewTask(text, listId) {
     try {
-        // Firestoreに新しいタスクを追加
+        // 現在のリスト内のタスク数を取得して position を割り当て
+        const snapshot = await db.collection('tasks').where('listId', '==', listId).get();
+        const position = snapshot.size; // 次の利用可能な位置を position とする
+
+        // Firestore に新しいタスクを追加
         const newTaskRef = await db.collection('tasks').add({
             description: text,
             status: "in-progress",
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            listId: listId
+            listId: listId,
+            position: position // Position を追加
         });
 
         var newTask = document.createElement("div");
