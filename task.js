@@ -32,7 +32,7 @@ function drop(ev) {
 
     // targetがtask-listクラスを持っている要素を見つけるまで、親を遡る
     while (newListElement && !newListElement.classList.contains('task-list')) {
-    newListElement = newListElement.parentNode;
+        newListElement = newListElement.parentNode;
     }
 
     if (target && target !== droppedElement) {
