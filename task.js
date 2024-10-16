@@ -38,24 +38,43 @@ function drop(ev) {
     if (target && target !== droppedElement) {
         var bounding = target.getBoundingClientRect();
         var offsetY = ev.clientY - bounding.top;
-
+        var newPosition;
+        
         if (target.classList.contains('task-item')) {
             if (offsetY < target.offsetHeight / 2) {
                 target.parentNode.insertBefore(droppedElement, target);
+                newPosition = [...target.parentNode.children].indexOf(droppedElement);
             } else {
                 target.parentNode.insertBefore(droppedElement, target.nextSibling);
+                newPosition = [...target.parentNode.children].indexOf(droppedElement);
             }
         } else if (target.classList.contains('task-list')) {
             target.appendChild(droppedElement);
+            newPosition = target.children.length - 1;
         }
         
         // タスクのステータスを更新
        if (newListElement) {
            const newListId = newListElement.id; // task-listクラスを持つdivのidを取得
            const taskId = droppedElement.id;
-           db.collection('tasks').doc(taskId).update({ listId: newListId });
+           db.collection('tasks').doc(taskId).update({ 
+               listId: newListId, 
+               position: newPosition 
+           }).then(() => {
+               // 更新後、リスト内の他のタスクを再順序付け
+               reorderTasks(newListId);
+           });
        }
     }
+}
+
+// ドラッグ＆ドロップ後にタスクの順番を更新して Firestore に保存
+async function reorderTasks(listId) {
+    const tasksSnapshot = await db.collection('tasks').where('listId', '==', listId).orderBy('position').get();
+    tasksSnapshot.forEach((doc, index) => {
+        // 各タスクの position をその新しいインデックスに更新
+        db.collection('tasks').doc(doc.id).update({ position: index });
+    });
 }
 
 // 削除ボタンの作成
