@@ -43,14 +43,14 @@ function drop(ev) {
         if (target.classList.contains('task-item')) {
             if (offsetY < target.offsetHeight / 2) {
                 target.parentNode.insertBefore(droppedElement, target);
-                newPosition = [...target.parentNode.children].indexOf(droppedElement);
+                newPosition = [...newListElement.parentNode.children].indexOf(droppedElement);
             } else {
                 target.parentNode.insertBefore(droppedElement, target.nextSibling);
-                newPosition = [...target.parentNode.children].indexOf(droppedElement);
+                newPosition = [...newListElement.parentNode.children].indexOf(droppedElement);
             }
         } else if (target.classList.contains('task-list')) {
             target.appendChild(droppedElement);
-            newPosition = target.children.length - 1;
+            newPosition = newListElement.children.length - 1;
         }
         
         // タスクのステータスを更新
