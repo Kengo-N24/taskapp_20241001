@@ -206,7 +206,7 @@ async function exitEditMode(textareaElement, taskTextElement, taskId) {
 // タスクをロードする関数
 async function loadTasks() {
     try {
-        const snapshot = await db.collection('tasks').orderBy('listId').orderBy('position').get();
+        const snapshot = await db.collection('tasks').orderBy('listId').get();
         let tasksByList = {
             'completed': [],
             'in-progress': [],
