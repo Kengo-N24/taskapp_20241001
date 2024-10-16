@@ -60,9 +60,6 @@ function drop(ev) {
            db.collection('tasks').doc(taskId).update({ 
                listId: newListId, 
                position: newPosition 
-           }).then(() => {
-               // 更新後、リスト内の他のタスクを再順序付け
-               reorderTasks(newListId);
            });
        }
     }
