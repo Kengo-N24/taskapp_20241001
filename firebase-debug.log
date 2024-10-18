@@ -1,0 +1,39 @@
+[debug] [2024-10-12T01:57:59.412Z] ----------------------------------------------------------------------
+[debug] [2024-10-12T01:57:59.414Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\kengo\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2024-10-12T01:57:59.414Z] CLI Version:   13.22.0
+[debug] [2024-10-12T01:57:59.414Z] Platform:      win32
+[debug] [2024-10-12T01:57:59.414Z] Node Version:  v20.18.0
+[debug] [2024-10-12T01:57:59.414Z] Time:          Sat Oct 12 2024 10:57:59 GMT+0900 (日本標準時)
+[debug] [2024-10-12T01:57:59.415Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-10-12T01:57:59.417Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2024-10-12T01:57:59.496Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-10-12T01:57:59.496Z] > authorizing via signed-in user (kengo.prs524@gmail.com)
+[debug] [2024-10-12T01:57:59.496Z] [iam] checking project tasker-2f1b5 for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2024-10-12T01:57:59.496Z] Checked if tokens are valid: false, expires at: 1728568898827
+[debug] [2024-10-12T01:57:59.497Z] Checked if tokens are valid: false, expires at: 1728568898827
+[debug] [2024-10-12T01:57:59.497Z] > refreshing access token with scopes: []
+[debug] [2024-10-12T01:57:59.497Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2024-10-12T01:57:59.497Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-10-12T01:57:59.648Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2024-10-12T01:57:59.648Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2024-10-12T01:57:59.654Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/tasker-2f1b5:testIamPermissions [none]
+[debug] [2024-10-12T01:57:59.654Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/tasker-2f1b5:testIamPermissions x-goog-quota-user=projects/tasker-2f1b5
+[debug] [2024-10-12T01:57:59.654Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/tasker-2f1b5:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2024-10-12T01:57:59.801Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2024-10-12T01:57:59.801Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2024-10-12T01:58:00.309Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/tasker-2f1b5:testIamPermissions 200
+[debug] [2024-10-12T01:58:00.309Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/tasker-2f1b5:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2024-10-12T01:58:00.309Z] Checked if tokens are valid: true, expires at: 1728701878648
+[debug] [2024-10-12T01:58:00.309Z] Checked if tokens are valid: true, expires at: 1728701878648
+[debug] [2024-10-12T01:58:00.309Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/tasker-2f1b5 [none]
+[debug] [2024-10-12T01:58:00.658Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/tasker-2f1b5 200
+[debug] [2024-10-12T01:58:00.658Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/tasker-2f1b5 {"projectId":"tasker-2f1b5","projectNumber":"131467156866","displayName":"tasker","name":"projects/tasker-2f1b5","resources":{"hostingSite":"tasker-2f1b5"},"state":"ACTIVE","etag":"1_9789acb4-0277-4c4f-9e76-998fa438df82"}
+[info] 
+[info] === Deploying to 'tasker-2f1b5'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2024-10-12T01:58:00.662Z] Checked if tokens are valid: true, expires at: 1728701878648
+[debug] [2024-10-12T01:58:00.662Z] Checked if tokens are valid: true, expires at: 1728701878648
+[debug] [2024-10-12T01:58:00.662Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tasker-2f1b5/versions [none]
+[debug] [2024-10-12T01:58:00.662Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tasker-2f1b5/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
