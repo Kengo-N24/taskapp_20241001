@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <!-- Firebase v8 スクリプトに変更 -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <div id="completed" class="task-list" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h2>■完了</h2>
+    </div>
+    
+    <div id="in-progress" class="task-list" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h2>■作業</h2>
+    </div>
+    
+    <div id="tomorrow" class="task-list" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h2>■明日以降</h2>
+    </div>
+    
+    <div id="other" class="task-list" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h2>■その他</h2>
+    </div>
+    <div class="task-input-container">
+        <h2>タスクの追加</h2>
+        <textarea id="new-task-input" rows="5" cols="50" placeholder=""></textarea>
+    </div>
+    <div class="task-input-container">
+        <button id="add-task-button">Add Task</button>
+        <button id="download-tasks-button">Download Tasks</button>
+    </div>
+
+    <script src="task.js"></script>
+</body>
+</html>

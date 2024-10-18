@@ -1,0 +1,92 @@
+h2 {
+    display: block;
+    font-size: 1.5em;
+    margin-block-start: 0em;
+    margin-block-end: 0.5em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    unicode-bidi: isolate;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    padding: 0px;
+}
+
+.task-list {
+    width: 80%;
+    min-height: 200px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.task-item {
+    position: relative;
+    padding-right: 60px;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.delete-button {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    border: none;
+    border-radius: 5px;
+    background: red;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.delete-button:hover {
+    background: darkred;
+}
+
+.edit-textarea {
+    width: calc(100% - 20px);
+    height: 100px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1.3em;
+}
+
+#add-task-button, 
+#download-tasks-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-right: 10px;
+}
+
+#add-task-button:hover,
+#download-tasks-button:hover {
+    background-color: #218838;
+}
+
+.task-input-container {
+    text-align: center; /* 中央揃え */
+    margin: 20px auto;  /* 上下の余白を追加 */
+}
+
+#new-task-input {
+    width: 80%; /* 幅を指定 */
+    margin-bottom: 10px; /* 下にスペースを追加 */
+    font-size: 1.3em;
+    padding: 10px;
+}
