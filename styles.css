@@ -36,6 +36,19 @@ body {
     background-color: #f9f9f9;
 }
 
+.delete-button {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    border: none;
+    border-radius: 5px;
+    /* background: red; */
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
 .delete-button:hover {
     background: darkred;
 }
